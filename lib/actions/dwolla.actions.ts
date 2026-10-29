@@ -40,6 +40,10 @@ const getDwollaClient = (): Client => {
   return dwollaClient;
 };
 
+export const validateDwollaConfiguration = async () => {
+  getDwollaClient();
+};
+
 // Create a Dwolla Funding Source using a Plaid Processor Token
 export const createFundingSource = async (
   options: CreateFundingSourceOptions
@@ -77,13 +81,9 @@ export const createDwollaCustomer = async (
 ) => {
   const client = getDwollaClient();
 
-  try {
-    return await client
-      .post("customers", newCustomer)
-      .then((res) => res.headers.get("location"));
-  } catch (err) {
-    console.error("Creating a Dwolla Customer Failed: ", err);
-  }
+  return await client
+    .post("customers", newCustomer)
+    .then((res) => res.headers.get("location"));
 };
 
 export const createTransfer = async ({

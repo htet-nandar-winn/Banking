@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,10 +25,14 @@ import { useRouter } from 'next/navigation';
 import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions';
 import PlaidLink from './PlaidLink';
 
-const AuthForm = ({ type }: { type: string }) => {
+const AuthForm = ({ type, plaidReady = false }: { type: string; plaidReady?: boolean }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  // Guards against a second submit while the first one is still running,
+  // otherwise the account would be created twice.
+  const isSubmitting = useRef(false);
 
   const formSchema = authFormSchema(type);
 
@@ -43,7 +47,11 @@ const AuthForm = ({ type }: { type: string }) => {
    
     // 2. Define a submit handler.
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
+      if (isSubmitting.current) return;
+
+      isSubmitting.current = true;
       setIsLoading(true);
+      setSubmitError('');
 
       try {
         // Sign up with Appwrite & create plaid token
@@ -62,9 +70,23 @@ const AuthForm = ({ type }: { type: string }) => {
             password: data.password
           }
 
-          const newUser = await signUp(userData);
+          const result = await signUp(userData);
 
-          setUser(newUser);
+          if (!result.success) {
+            setSubmitError(result.error);
+            return;
+          }
+
+          setUser(result.user);
+
+          // When Plaid is configured the user can link a bank straight away.
+          // Otherwise they go to the dashboard, where they can link a bank
+          // once Plaid has been set up.
+          if (!plaidReady) {
+            router.push('/');
+            router.refresh();
+          }
+          return;
         }
 
         if(type === 'sign-in') {
@@ -73,11 +95,23 @@ const AuthForm = ({ type }: { type: string }) => {
             password: data.password,
           })
 
-          if(response) router.push('/')
+          if (!response.success) {
+            setSubmitError(response.error);
+            return;
+          }
+
+          router.push('/');
+          router.refresh();
         }
       } catch (error) {
         console.log(error);
+        setSubmitError(
+          error instanceof Error
+            ? error.message
+            : 'Unable to complete your request. Please try again.'
+        );
       } finally {
+        isSubmitting.current = false;
         setIsLoading(false);
       }
     }
@@ -114,7 +148,16 @@ const AuthForm = ({ type }: { type: string }) => {
       </header>
       {user ? (
         <div className="flex flex-col gap-4">
-          <PlaidLink user={user} variant="primary" />
+          <Link
+            href="/"
+            className="form-link text-center text-14"
+            onClick={() => {
+              router.push('/');
+              router.refresh();
+            }}
+          >
+            Go to Dashboard
+          </Link>
         </div>
       ): (
         <>
@@ -142,6 +185,12 @@ const AuthForm = ({ type }: { type: string }) => {
               <CustomInput control={form.control} name='email' label="Email" placeholder='Enter your email' />
 
               <CustomInput control={form.control} name='password' label="Password" placeholder='Enter your password' />
+
+              {submitError && (
+                <p role="alert" className="text-sm text-red-600">
+                  {submitError}
+                </p>
+              )}
 
               <div className="flex flex-col gap-4">
                 <Button type="submit" disabled={isLoading} className="form-btn">

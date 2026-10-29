@@ -67,16 +67,22 @@ export const formatDateTime = (dateString: Date) => {
 };
 
 export function formatAmount(amount: number): string {
+  const value = Number(amount);
+
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
   });
 
-  return formatter.format(amount);
+  return formatter.format(Number.isFinite(value) ? value : 0);
 }
 
-export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
+// `JSON.stringify(undefined)` returns `undefined`, which makes `JSON.parse`
+// throw. Returning the value untouched keeps callers from blowing up when a
+// lookup (a user profile for example) comes back empty.
+export const parseStringify = (value: any): any =>
+  value === undefined ? value : JSON.parse(JSON.stringify(value));
 
 export const removeSpecialCharacters = (value: string) => {
   return value.replace(/[^\w\s]/gi, "");

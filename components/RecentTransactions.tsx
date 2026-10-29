@@ -6,7 +6,7 @@ import TransactionsTable from './TransactionsTable'
 import { Pagination } from './Pagination'
 
 const RecentTransactions = ({
-  accounts,
+  accounts = [],
   transactions = [],
   appwriteItemId,
   page = 1,
@@ -20,6 +20,21 @@ const RecentTransactions = ({
   const currentTransactions = transactions.slice(
     indexOfFirstTransaction, indexOfLastTransaction
   )
+
+  if (!accounts.length) {
+    return (
+      <section className="recent-transactions">
+        <header className="flex items-center justify-between">
+          <h2 className="recent-transactions-label">Recent transactions</h2>
+        </header>
+
+        <p className="py-10 text-14 text-gray-600">
+          No accounts yet. Use “Connect bank” in the sidebar to add your first
+          account.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="recent-transactions">

@@ -45,6 +45,35 @@ If you're getting started and need assistance or face any bugs, join our active 
 
 <a href="https://discord.com/invite/n6EdbFJ" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/618f4872-1e10-42da-8213-1d69e486d02e" /></a>
 
+## <a name="demo-mode">🧪 Local demo mode (no Plaid/Dwolla keys)</a>
+
+Plaid and Dwolla credentials are **optional**. Without them the app still runs
+end to end:
+
+- **Sign up / sign in** work against Appwrite as usual.
+- **Connect bank** creates a local bank account in Appwrite (name, type and
+  starting balance), pre-filled with a realistic transaction history.
+- **Transfer funds** moves money between two of your accounts: balances are
+  updated and a transaction is recorded for both sides.
+- The Plaid "Connect bank" flow reappears automatically as soon as
+  `PLAID_CLIENT_ID`, `PLAID_SECRET`, `DWOLLA_KEY` and `DWOLLA_SECRET` are set in
+  `.env.local`.
+
+To transfer money between accounts:
+
+1. Add two accounts from **My Banks → Connect bank**.
+2. Copy the shareable id shown under one of the cards.
+3. Go to **Transfer Funds**, pick the source account, paste the shareable id,
+   enter an amount and submit.
+
+Useful scripts:
+
+```bash
+npm run doctor      # check which integrations are configured
+npm run reset-data  # delete all banks + transactions (keeps user accounts)
+npm run reset-all   # delete everything, including user accounts
+```
+
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
 - Next.js

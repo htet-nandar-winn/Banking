@@ -20,7 +20,10 @@ export const createTransaction = async (transaction: CreateTransactionProps) => 
       {
         channel: 'online',
         category: 'Transfer',
-        ...transaction
+        ...transaction,
+        // The amount is a string coming from the form, the collection stores
+        // it as a number.
+        amount: Number(transaction.amount),
       }
     )
 

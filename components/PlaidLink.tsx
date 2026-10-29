@@ -9,22 +9,33 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   const router = useRouter();
 
   const [token, setToken] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const getLinkToken = async () => {
       const data = await createLinkToken(user);
 
-      setToken(data?.linkToken);
+      if (!data?.linkToken) {
+        setError(data?.error ?? 'Unable to create a Plaid link token.');
+        return;
+      }
+
+      setToken(data.linkToken);
     }
 
     getLinkToken();
   }, [user]);
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(async (public_token: string) => {
-    await exchangePublicToken({
+    const result = await exchangePublicToken({
       publicToken: public_token,
       user,
     })
+
+    if (result?.publicTokenExchange !== 'complete') {
+      setError(result?.error ?? 'Unable to link your bank account.');
+      return;
+    }
 
     router.push('/');
   }, [user])
@@ -35,9 +46,16 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   }
 
   const { open, ready } = usePlaidLink(config);
-  
+
+  const errorMessage = error ? (
+    <p role="alert" className="text-sm text-red-600 max-w-[280px]">
+      {error}
+    </p>
+  ) : null;
+
   return (
     <>
+      {errorMessage}
       {variant === 'primary' ? (
         <Button
           onClick={() => open()}

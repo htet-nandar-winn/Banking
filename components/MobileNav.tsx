@@ -69,7 +69,19 @@ const MobileNav = ({ user }: MobileNavProps) => {
                 )
               })}
 
-              USER
+              <SheetClose asChild>
+                <Link href="/my-banks" className="mobilenav-sheet_close w-full">
+                  <Image
+                    src="/icons/connect-bank.svg"
+                    alt="connect bank"
+                    width={20}
+                    height={20}
+                  />
+                  <p className="text-16 font-semibold text-black-2">
+                    Connect bank
+                  </p>
+                </Link>
+              </SheetClose>
               </nav>
             </SheetClose>
 

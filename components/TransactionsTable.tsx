@@ -26,7 +26,9 @@ const CategoryBadge = ({ category }: CategoryBadgeProps) => {
   )
 } 
 
-const TransactionsTable = ({ transactions }: TransactionTableProps) => {
+const TransactionsTable = ({ transactions = [] }: TransactionTableProps) => {
+  const txList = Array.isArray(transactions) ? transactions : []
+
   return (
     <Table>
       <TableHeader className="bg-[#f9fafb]">
@@ -40,7 +42,14 @@ const TransactionsTable = ({ transactions }: TransactionTableProps) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((t: Transaction) => {
+        {txList.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className="text-center text-sm text-gray-500">
+              No transactions found
+            </TableCell>
+          </TableRow>
+        ) : (
+          txList.map((t: Transaction) => {
           const status = getTransactionStatus(new Date(t.date))
           const amount = formatAmount(t.amount)
 
@@ -82,7 +91,8 @@ const TransactionsTable = ({ transactions }: TransactionTableProps) => {
               </TableCell>
             </TableRow>
           )
-        })}
+          })
+        )}
       </TableBody>
     </Table>
   )

@@ -21,9 +21,10 @@ const Copy = ({ title }: { title: string }) => {
       className="mt-3 flex max-w-[320px] gap-4"
       variant="secondary"
       onClick={copyToClipboard}
+      title="Copy the shareable id"
     >
       <p className="line-clamp-1 w-full max-w-full text-xs font-medium text-black-2">
-        {title} test
+        {hasCopied ? "Copied!" : title}
       </p>
 
       {!hasCopied ? (

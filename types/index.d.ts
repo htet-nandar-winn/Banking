@@ -90,6 +90,13 @@ declare type Bank = {
   fundingSourceUrl: string;
   userId: string;
   shareableId: string;
+  // Demo accounts keep their state locally instead of in Plaid.
+  balance?: number;
+  institutionName?: string;
+  accountName?: string;
+  accountType?: string;
+  mask?: string;
+  isDemo?: boolean;
 };
 
 declare type AccountTypes =

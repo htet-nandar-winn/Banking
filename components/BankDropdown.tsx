@@ -21,10 +21,13 @@ export const BankDropdown = ({
 }: BankDropdownProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [selected, setSeclected] = useState(accounts[0]);
+  const accountList = Array.isArray(accounts) ? accounts : [];
+  const [selected, setSeclected] = useState(accountList[0]);
 
   const handleBankChange = (id: string) => {
-    const account = accounts.find((account) => account.appwriteItemId === id)!;
+    const account = accountList.find((account) => account.appwriteItemId === id);
+
+    if (!account) return;
 
     setSeclected(account);
     const newUrl = formUrlQuery({
@@ -39,9 +42,17 @@ export const BankDropdown = ({
     }
   };
 
+  if (!selected) {
+    return (
+      <div className={`flex w-full bg-white gap-3 md:w-[300px] rounded-md border p-2 text-sm text-gray-500 ${otherStyles}`}>
+        No bank accounts available
+      </div>
+    );
+  }
+
   return (
     <Select
-      defaultValue={selected.id}
+      defaultValue={selected?.id || selected?.appwriteItemId}
       onValueChange={(value) => handleBankChange(value)}
     >
       <SelectTrigger
@@ -53,7 +64,7 @@ export const BankDropdown = ({
           height={20}
           alt="account"
         />
-        <p className="line-clamp-1 w-full text-left">{selected.name}</p>
+        <p className="line-clamp-1 w-full text-left">{selected?.name || "Select a bank"}</p>
       </SelectTrigger>
       <SelectContent
         className={`w-full bg-white md:w-[300px] ${otherStyles}`}
@@ -63,7 +74,7 @@ export const BankDropdown = ({
           <SelectLabel className="py-2 font-normal text-gray-500">
             Select a bank to display
           </SelectLabel>
-          {accounts.map((account: Account) => (
+          {accountList.map((account: Account) => (
             <SelectItem
               key={account.id}
               value={account.appwriteItemId}

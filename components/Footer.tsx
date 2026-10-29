@@ -7,16 +7,17 @@ const Footer = ({ user, type = 'desktop' }: FooterProps) => {
   const router = useRouter();
 
   const handleLogOut = async () => {
-    const loggedOut = await logoutAccount();
+    await logoutAccount();
 
-    if(loggedOut) router.push('/sign-in')
+    router.push('/sign-in')
+    router.refresh()
   }
 
   return (
     <footer className="footer">
       <div className={type === 'mobile' ? 'footer_name-mobile' : 'footer_name'}>
         <p className="text-xl font-bold text-gray-700">
-          {user?.firstName[0]}
+          {user?.firstName?.[0] ?? 'H'}
         </p>
       </div>
 

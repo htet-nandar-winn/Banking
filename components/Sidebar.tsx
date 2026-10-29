@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Footer from './Footer'
 import PlaidLink from './PlaidLink'
+import ConnectBankButton from './ConnectBankButton'
+import { isPlaidConfigured } from '@/lib/config'
 
 const Sidebar = ({ user }: SiderbarProps) => {
   const pathname = usePathname();
@@ -49,7 +51,11 @@ const Sidebar = ({ user }: SiderbarProps) => {
           )
         })}
         
-        <PlaidLink user={user} />
+        {isPlaidConfigured() ? (
+          <PlaidLink user={user} variant="ghost" />
+        ) : (
+          <ConnectBankButton user={user} variant="ghost" />
+        )}
       </nav>
 
       <Footer user={user} />

@@ -4,32 +4,54 @@ import TransactionsTable from '@/components/TransactionsTable';
 import { getAccount, getAccounts } from '@/lib/actions/bank.actions';
 import { getLoggedInUser } from '@/lib/actions/user.actions';
 import { formatAmount } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 import React from 'react'
 
 const TransactionHistory = async ({ searchParams: { id, page }}:SearchParamProps) => {
   const currentPage = Number(page as string) || 1;
   const loggedIn = await getLoggedInUser();
+
+  if (!loggedIn) redirect('/sign-in');
+
   const accounts = await getAccounts({ 
     userId: loggedIn.$id 
   })
 
   if(!accounts) return;
   
-  const accountsData = accounts?.data;
+  const accountsData = accounts?.data ?? [];
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
 
-  const account = await getAccount({ appwriteItemId })
+  const account = appwriteItemId ? await getAccount({ appwriteItemId }) : undefined;
 
+  const transactions = account?.transactions ?? [];
+  const rowsPerPage = 10;
+  const totalPages = Math.ceil(transactions.length / rowsPerPage);
 
-const rowsPerPage = 10;
-const totalPages = Math.ceil(account?.transactions.length / rowsPerPage);
+  const indexOfLastTransaction = currentPage * rowsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
 
-const indexOfLastTransaction = currentPage * rowsPerPage;
-const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
+  const currentTransactions = transactions.slice(
+    indexOfFirstTransaction, indexOfLastTransaction
+  )
 
-const currentTransactions = account?.transactions.slice(
-  indexOfFirstTransaction, indexOfLastTransaction
-)
+  if (!accountsData.length) {
+    return (
+      <div className="transactions">
+        <div className="transactions-header">
+          <HeaderBox
+            title="Transaction History"
+            subtext="See your bank details and transactions."
+          />
+        </div>
+
+        <p className="py-10 text-14 text-gray-600">
+          You have no accounts yet. Add one from My Banks to start seeing
+          transactions here.
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="transactions">
       <div className="transactions-header">
