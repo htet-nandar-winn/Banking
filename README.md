@@ -122,12 +122,16 @@ This project helps demonstrate practical experience with modern web development,
 
 ## 👩‍💻 Developer
 
-**Htet Nandar Winn**
+**Htet Nandar Winn** 
 
-IT Student | Aspiring Web Developer
+Passionate about software development, web technologies, and creating practical applications through continuous learning and hands-on experience.
 
-- GitHub: https://github.com/htet-nandar-winn/
-- Project Repository: [(https://github.com/htet-nandar-winn/Banking/)
+- **GitHub Profile:** [Htet Nandar Winn](https://github.com/htet-nandar-winn)
+- **Project Repository:** [Banking System](https://github.com/htet-nandar-winn/Banking)
+
+---
+
+*Designed and developed by Htet Nandar Winn.*
 
 ---
 
