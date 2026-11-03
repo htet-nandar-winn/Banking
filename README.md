@@ -126,8 +126,8 @@ This project helps demonstrate practical experience with modern web development,
 
 IT Student | Aspiring Web Developer
 
-- GitHub: [@kklovesdaisy](https://github.com/kklovesdaisy)
-- Project Repository: [Banking](https://github.com/kklovesdaisy/Banking)
+- GitHub: https://github.com/htet-nandar-winn/
+- Project Repository: [(https://github.com/htet-nandar-winn/Banking/)
 
 ---
 
